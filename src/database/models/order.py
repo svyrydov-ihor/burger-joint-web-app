@@ -1,6 +1,6 @@
 from typing import List, TYPE_CHECKING
 import enum
-from sqlalchemy import String, DateTime, ForeignKey
+from sqlalchemy import String, DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..database import Base
@@ -19,7 +19,7 @@ class Order(Base):
     __tablename__ = "orders"
     id: Mapped[int] = mapped_column(primary_key=True)
     customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id", ondelete="CASCADE"))
-    created_at: Mapped[DateTime] = mapped_column(DateTime)
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     status: Mapped[OrderStatus] = mapped_column(String(64), nullable=False, default=OrderStatus.Pending.value)
 
     customer: Mapped["Customer"] = relationship(back_populates="orders")

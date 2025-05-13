@@ -20,5 +20,9 @@ class Burger(Base):
     ingredient_items: Mapped[List["BurgerIngredientItem"]] = relationship(
         back_populates="burger", lazy="selectin")
 
+    @property
+    def ingredients(self) -> List["Ingredient | None"]:
+        return [item.ingredient for item in self.ingredient_items if item is not None]
+
     class Config:
         from_attributes = True

@@ -15,7 +15,6 @@ engine  = create_async_engine(ASYNC_DATABASE_URL, echo=True)
 AsyncSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
 
 Base = declarative_base()
-from src.database import models
 
 async def init_db():
     async with engine.begin() as conn:

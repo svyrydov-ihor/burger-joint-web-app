@@ -1,6 +1,5 @@
 from typing import List, TYPE_CHECKING
-import enum
-from sqlalchemy import String, Float, Integer, ForeignKey
+from sqlalchemy import String, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..database import Base
@@ -8,23 +7,6 @@ from ..database import Base
 if TYPE_CHECKING:
     from .order_burger_item import OrderBurgerItem
     from .burger_ingredient_items import BurgerIngredientItem
-
-class BurgerIngredient(enum.Enum): #will be implemented later, for now ignore
-    Bun = "Bun"
-    BeefPatty = "Beef patty"
-    AmericanCheese = "American cheese"
-    MozzarellaCheese = "Mozzarella cheese"
-    TomatoSlices = "Tomato slices"
-    ShreddedLettuce = "Shredded lettuce"
-    SmokedBacon = "Smoked bacon"
-    PickleSlices = "Pickle slices"
-    Onions = "Onions"
-    Mushrooms = "Mushrooms"
-    Eggs = "Eggs"
-    Ketchup = "Ketchup"
-    Mustard = "Mustard"
-    Mayonnaise = "Mayonnaise"
-    PepperSauce = "Pepper sauce"
 
 class Burger(Base):
     __tablename__ = "burgers"

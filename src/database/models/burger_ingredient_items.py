@@ -19,3 +19,6 @@ class BurgerIngredientItem(Base):
 
     burger: Mapped["Burger"] = relationship(back_populates="ingredient_items")
     ingredient: Mapped["Ingredient"] = relationship(back_populates="burger_items")
+
+    class Config:
+        from_attributes = True

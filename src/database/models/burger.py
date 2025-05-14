@@ -21,7 +21,7 @@ class Burger(Base):
         back_populates="burger", lazy="selectin")
 
     @property
-    def ingredients(self) -> List["str | None"]:
+    def ingredients(self) -> List["str"]:
         return [item.ingredient.name for item in self.ingredient_items if item is not None]
 
     class Config:

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel
 
 class BurgerBase(BaseModel):
@@ -11,7 +11,7 @@ class BurgerCreate(BurgerBase):
 
 class BurgerResponse(BurgerBase):
     id: int
-    ingredients: List[str]
+    ingredients: Dict[str, int]
 
     class Config:
         from_attributes = True

@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Dict
 from sqlalchemy import String, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -24,8 +24,8 @@ class Burger(Base):
         cascade="all, delete-orphan")
 
     @property
-    def ingredients(self) -> List[str]:
-        return [item.ingredient.name for item in self.ingredient_items if item is not None]
+    def ingredients(self) -> Dict[str, int]:
+        return {item.ingredient.name: item.quantity for item in self.ingredient_items if item is not None}
 
     class Config:
         from_attributes = True

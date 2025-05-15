@@ -16,9 +16,12 @@ async def create_burger(db: AsyncSession, burger_in: BurgerCreate) -> Burger:
     db.add(db_burger)
     await db.flush()
 
-    ingredient_items_to_add: List[BurgerIngredientItem] = []
+    if burger_in.ingredient_ids in ([], None):
+        raise ValueError("Burger must have at least one ingredient.")
 
+    ingredient_items_to_add: List[BurgerIngredientItem] = []
     ingredient_quantities: Dict[int, int] = {}
+
     for ingredient_id in burger_in.ingredient_ids:
         ingredient_quantities[ingredient_id] = ingredient_quantities.get(ingredient_id, 0) + 1
 
@@ -46,15 +49,18 @@ async def create_burger(db: AsyncSession, burger_in: BurgerCreate) -> Burger:
         if refreshed_burger:
             logging.info(f"Burger {db_burger.id} created successfully.")
             return db_burger
-        else:
-            logging.error(f"Failed to refresh burger {db_burger.id} after creation.")
+
+        logging.error(f"Failed to refresh burger {db_burger.id} after creation.")
+        raise
 
     except ValueError as e:
         await db.rollback()
         logging.warning(str(e))
+        raise
     except Exception as e:
         await db.rollback()
         logging.error(f"Failed to create burger {burger_in.name}: {str(e)}.")
+        raise
 
 async def update_burger(db: AsyncSession, burger_id: int, burger_in: BurgerUpdate) -> Optional[Burger]:
     db_burger_to_update = await get_burger_by_id(db, burger_id)
@@ -74,7 +80,7 @@ async def update_burger(db: AsyncSession, burger_id: int, burger_in: BurgerUpdat
     if burger_fields_updated:
         db.add(db_burger_to_update)
 
-    if "ingredient_ids" in update_data and update_data["ingredient_ids"] is not None:
+    if "ingredient_ids" in update_data and update_data["ingredient_ids"] not in ([], None):
         query = delete(BurgerIngredientItem).where(BurgerIngredientItem.burger_id == burger_id)
         await db.execute(query)
 
@@ -104,12 +110,14 @@ async def update_burger(db: AsyncSession, burger_id: int, burger_in: BurgerUpdat
         if refreshed_burger:
             logging.info(f"Burger {db_burger_to_update.id} updated successfully.")
             return db_burger_to_update
-        else:
-            logging.error(f"Failed to re-fetch burger {db_burger_to_update.id} after update.")
-            return db_burger_to_update
+
+        logging.error(f"Failed to re-fetch burger {db_burger_to_update.id} after update.")
+        return db_burger_to_update
+
     except ValueError as e:
         await db.rollback()
         logging.warning(str(e))
+        raise
     except Exception as e:
         await db.rollback()
         logging.error(f"Failed to update burger {burger_id}: {str(e)}.")

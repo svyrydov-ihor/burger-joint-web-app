@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, status, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 import logging

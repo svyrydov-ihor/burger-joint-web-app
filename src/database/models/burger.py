@@ -16,12 +16,15 @@ class Burger(Base):
     price: Mapped[float] = mapped_column(Float, nullable=False)
 
     order_items: Mapped[List["OrderBurgerItem"]] = relationship(
-        back_populates="burger", lazy="selectin")
+        back_populates="burger",
+        lazy="selectin")
     ingredient_items: Mapped[List["BurgerIngredientItem"]] = relationship(
-        back_populates="burger", lazy="selectin")
+        back_populates="burger",
+        lazy="selectin",
+        cascade="all, delete-orphan")
 
     @property
-    def ingredients(self) -> List["str"]:
+    def ingredients(self) -> List[str]:
         return [item.ingredient.name for item in self.ingredient_items if item is not None]
 
     class Config:

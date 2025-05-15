@@ -1,12 +1,10 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel, Field
 
-from ..models.order import OrderStatus
-
-if TYPE_CHECKING:
-    from .burger import BurgerResponse
-    from .customer import CustomerResponse
+from src.database.models.order import OrderStatus
+from src.database.schemes.burger import BurgerResponse
+from src.database.schemes.customer import CustomerResponse
 
 class OrderBurgerItemResponse(BaseModel):
     burger: Optional[BurgerResponse] = None
@@ -30,7 +28,7 @@ class OrderResponse(OrderBase):
     customer: CustomerResponse
     created_at: datetime
     status: OrderStatus
-    burger_items: List[OrderBurgerItemResponse]
+    burgers_with_quantity: Dict[str, int]
 
     class Config:
         from_attributes = True

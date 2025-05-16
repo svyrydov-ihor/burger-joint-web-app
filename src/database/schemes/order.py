@@ -9,6 +9,8 @@ from src.database.schemes.customer import CustomerResponse
 class OrderBurgerItemResponse(BaseModel):
     burger: Optional[BurgerResponse] = None
     quantity: int
+    burger_price: float
+    item_subtotal: float
 
     class Config:
         from_attributes = True
@@ -29,6 +31,7 @@ class OrderResponse(OrderBase):
     created_at: datetime
     status: OrderStatus
     burgers_with_quantity: Dict[str, int]
+    total_price: float
 
     class Config:
         from_attributes = True

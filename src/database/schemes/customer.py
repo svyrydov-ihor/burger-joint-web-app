@@ -11,6 +11,9 @@ class CustomerCreate(CustomerBase):
 class CustomerResponse(CustomerBase):
     id: int
 
+    class Config:
+        from_attributes = True
+
 class CustomerUpdate(CustomerBase):
     name: Optional[str] = None
     phone: Optional[str] = None

@@ -46,7 +46,7 @@ async def read_order(
         order_id: int,
         db: AsyncSession = Depends(get_db_session)
         ):
-    db_order = await OrderService.get_order_by_id(db, order_id)
+    db_order = await OrderService.get_order_by_id_with_total_price(db, order_id)
     if db_order is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
     return db_order

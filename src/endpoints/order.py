@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import logging
 
 from src.core.dependencies import get_db_session
-from src.database.crud import order as crud
 from src.database.schemes.order import *
+from src.services.order import OrderService
 
 router = APIRouter(
     prefix="/orders",
@@ -17,7 +17,7 @@ async def create_new_order(
         db: AsyncSession = Depends(get_db_session)
         ):
     try:
-        return await crud.create_order(db, order_in)
+        return await OrderService.create_order(db, order_in)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     except Exception as e:
@@ -31,7 +31,7 @@ async def update_existing_order(
         db: AsyncSession = Depends(get_db_session)
         ):
     try:
-        updated_order = await crud.update_order(db, order_id, order_in)
+        updated_order = await OrderService.update_order(db, order_id, order_in)
         if updated_order is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
         return updated_order
@@ -46,7 +46,7 @@ async def read_order(
         order_id: int,
         db: AsyncSession = Depends(get_db_session)
         ):
-    db_order = await crud.get_order_by_id(db, order_id)
+    db_order = await OrderService.get_order_by_id(db, order_id)
     if db_order is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
     return db_order
@@ -57,7 +57,7 @@ async def read_all_orders(
         limit: int = 100,
         db: AsyncSession = Depends(get_db_session)
         ):
-    return await crud.get_all_orders(db, offset, limit)
+    return await OrderService.get_all_orders(db, offset, limit)
 
 @router.delete("/{order_id}", response_model=OrderResponse)
 async def delete_existing_order(
@@ -65,7 +65,7 @@ async def delete_existing_order(
         db: AsyncSession = Depends(get_db_session)
         ):
     try:
-        deleted_order = await crud.delete_order(db, order_id)
+        deleted_order = await OrderService.delete_order(db, order_id)
         if deleted_order is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
         return deleted_order

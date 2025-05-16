@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import logging
 
 from src.core.dependencies import get_db_session
-from src.database.crud import burger as crud
 from src.database.schemes.burger import *
+from src.services.burger import BurgerService
 
 router = APIRouter(
     prefix="/burgers",
@@ -17,7 +17,7 @@ async def create_new_burger(
         db: AsyncSession = Depends(get_db_session)
         ):
     try:
-        return await crud.create_burger(db, burger_in)
+        return await BurgerService.create_burger(db, burger_in)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     except Exception as e:
@@ -31,7 +31,7 @@ async def update_existing_burger(
         db: AsyncSession = Depends(get_db_session)
         ):
     try:
-        updated_burger = await crud.update_burger(db, burger_id, burger_in)
+        updated_burger = await BurgerService.update_burger(db, burger_id, burger_in)
         if updated_burger is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Burger not found")
         return updated_burger
@@ -46,7 +46,7 @@ async def read_burger(
         burger_id: int,
         db: AsyncSession = Depends(get_db_session)
         ):
-    db_burger = await crud.get_burger_by_id(db, burger_id)
+    db_burger = await BurgerService.get_burger_by_id(db, burger_id)
     if db_burger is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Burger not found")
     return db_burger
@@ -57,7 +57,7 @@ async def read_all_burgers(
         limit: int = 100,
         db: AsyncSession = Depends(get_db_session)
         ):
-    return await crud.get_all_burgers(db, offset, limit)
+    return await BurgerService.get_all_burgers(db, offset, limit)
 
 @router.delete("/{burger_id}", response_model=BurgerResponse)
 async def delete_existing_burger(
@@ -65,7 +65,7 @@ async def delete_existing_burger(
         db: AsyncSession = Depends(get_db_session)
         ):
     try:
-        deleted_burger = await crud.delete_burger(db, burger_id)
+        deleted_burger = await BurgerService.delete_burger(db, burger_id)
         if deleted_burger is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Burger not found")
         return deleted_burger

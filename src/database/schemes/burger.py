@@ -7,7 +7,7 @@ class BurgerBase(BaseModel):
     price: float
 
 class BurgerCreate(BurgerBase):
-    ingredient_ids: Optional[List[int]] = None
+    ingredient_ids: List[int]
 
 class BurgerResponse(BurgerBase):
     id: int
@@ -16,7 +16,7 @@ class BurgerResponse(BurgerBase):
     class Config:
         from_attributes = True
 
-class BurgerUpdate(BurgerBase):
+class BurgerUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     price: Optional[float] = None

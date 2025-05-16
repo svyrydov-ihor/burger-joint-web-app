@@ -85,7 +85,7 @@ async def update_order(db: AsyncSession, order_id: int, order_in: OrderUpdate) -
         db.add(db_order_to_update)
 
     if "items" in update_data and update_data["items"] not in ([], None):
-        query = delete(OrderBurgerItem).where(OrderBurgerItem.order_id == order_in.id)
+        query = delete(OrderBurgerItem).where(OrderBurgerItem.order_id == order_id)
         await db.execute(query)
 
         order_burger_items_to_add: List[OrderBurgerItem] = []
@@ -110,14 +110,14 @@ async def update_order(db: AsyncSession, order_id: int, order_in: OrderUpdate) -
     try:
         await db.commit()
 
-        refreshed_order = get_order_by_id(db, order_id)
+        refreshed_order = await get_order_by_id(db, order_id)
 
         if refreshed_order:
             logging.info(f"Order {order_id} updated successfully.")
-            return db_order_to_update
+            return refreshed_order
 
         logging.error(f"Failed to refresh order {order_id} after update.")
-        return db_order_to_update
+        return refreshed_order
 
     except ValueError as e:
         await db.rollback()

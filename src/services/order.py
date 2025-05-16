@@ -28,8 +28,8 @@ class OrderService:
                 if burger is None:
                     raise ValueError(f"Burger with ID {item.burger_id} wasn't found in DB.")
 
-            await crud_order.create_order(db, order_in)
-            order = await OrderService.get_order_by_id_with_total_price(db, order_in.id)
+            created_order = await crud_order.create_order(db, order_in)
+            order = await OrderService.get_order_by_id_with_total_price(db, created_order.id)
             logging.info(f"Order {order.id} created successfully via OrderService.")
             return order
         except ValueError as e:
@@ -129,11 +129,11 @@ class OrderService:
     @staticmethod
     async def delete_order(db: AsyncSession, order_id: int) -> Optional[OrderResponse]:
         try:
-            await crud_order.delete_order(db, order_id)
             order = await OrderService.get_order_by_id_with_total_price(db, order_id)
             if order is None:
                 logging.warning(f"Order with id {order_id} not found for deletion via OrderService.")
                 return None
+            await crud_order.delete_order(db, order_id)
             logging.info(f"Order {order_id} deleted successfully via OrderService.")
             return order
         except Exception as e:

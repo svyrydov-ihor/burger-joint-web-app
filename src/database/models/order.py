@@ -1,6 +1,6 @@
 from typing import List, TYPE_CHECKING, Dict
 import enum
-from sqlalchemy import String, DateTime, ForeignKey, func, Enum as SQLAlchemyEnum
+from sqlalchemy import DateTime, ForeignKey, func, Enum as SQLAlchemyEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..database import Base

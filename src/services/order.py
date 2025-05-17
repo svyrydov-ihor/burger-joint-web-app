@@ -1,13 +1,9 @@
-from datetime import datetime
-from typing import List, Dict, Optional
-from sqlalchemy import select, delete
+from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 import logging
 
 from src.database.models import Burger
-from src.database.models.order import Order, OrderStatus
-from src.database.models.order_burger_item import OrderBurgerItem
+from src.database.models.order import Order
 from src.database.crud import order as crud_order
 from src.database.schemes.order import OrderCreate, OrderUpdate, OrderResponse
 from src.database.schemes.customer import CustomerResponse

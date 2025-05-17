@@ -58,6 +58,5 @@
         // Ensure this variable is defined even if empty for new mode to avoid JS errors.
         const initialSelectedIngredients = {{ initial_selected_ingredients_js | tojson | safe if is_edit_mode and initial_selected_ingredients_js else [] }};
     </script>
-    {# Make sure you are using the corrected path if you moved burger_constructor.js #}
     <script src="{{ url_for('static', path='/burger_constructor.js') }}"></script>
 {% endblock %}

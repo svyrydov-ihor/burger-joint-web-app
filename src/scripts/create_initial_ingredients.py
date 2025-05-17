@@ -1,10 +1,9 @@
 import asyncio
 from typing import Dict, List
-from fastapi import Depends
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.database import AsyncSessionLocal, engine, Base
+from src.database.database import AsyncSessionLocal
 from src.database.models import Ingredient
 
 initial_ingredients = [{"name": "Bun", "manufacturer": "Top bakery"},

@@ -12,7 +12,7 @@ class OrderBurgerItem(Base):
     order_id: Mapped[int] = mapped_column(
         ForeignKey("orders.id", ondelete="CASCADE"), primary_key=True)
     burger_id: Mapped[int] = mapped_column(
-        ForeignKey("burgers.id", ondelete="SET NULL"), primary_key=True, nullable=True)
+        ForeignKey("burgers.id", ondelete="RESTRICT"), primary_key=True, nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
 
     order: Mapped["Order"] = relationship(back_populates="burger_items")

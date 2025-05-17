@@ -1,5 +1,6 @@
 from typing import List, Dict, Optional
 from sqlalchemy import select, delete
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 import logging
@@ -158,6 +159,10 @@ async def delete_burger(db: AsyncSession, burger_id: int) -> Optional[Burger]:
         await db.commit()
         logging.info(f"Burger {burger_id} deleted successfully.")
         return existing_burger
+    except IntegrityError as e:
+        logging.warning(
+            f"IntegrityError deleting burger {burger_id} via BurgerService: {e}. This burger is likely in use.")
+        raise ValueError(f"Cannot delete burger: It is currently part of one or more existing orders.")
     except Exception as e:
         await db.rollback()
         logging.error(f"Failed to delete burger {burger_id}: {str(e)}.")

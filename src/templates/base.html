@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title | default("Burger Joint") }}</title>
+    {# Corrected path to your CSS file #}
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script> {# Keep if HTMX is used elsewhere #}
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('home') }}" class="{% if request.url.path == url_for('home') %}active{% endif %}">Burger Joint</a>
+        <a href="{{ url_for('list_customers_page') }}" class="{% if request.url.path.startswith('/customers') %}active{% endif %}">Customers</a>
+        <a href="{{ url_for('list_burgers_page') }}" class="{% if request.url.path.startswith('/burgers') %}active{% endif %}">Burgers</a>
+        <a href="{{ url_for('list_orders_page') }}" class="{% if request.url.path.startswith('/orders') %}active{% endif %}">Orders</a>
+    </nav>
+    <div class="container">
+        <h1>{{ page_title }}</h1>
+        {% if error %} {# General error display can be here or in specific templates #}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+    {% block page_scripts %}{% endblock %}
+</body>
+</html>

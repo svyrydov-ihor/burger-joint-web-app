@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {# Form action and method will adapt based on whether it's an edit or new #}
+    <form method="POST"
+          action="{{ url_for('update_customer_submit', customer_id=customer_data.id) if is_edit_mode else url_for('create_customer') }}">
+
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="{{ customer_data.name or '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone:</label>
+            <input type="text" id="phone" name="phone" value="{{ customer_data.phone or '' }}" required>
+        </div>
+
+        <button type="submit" style="margin-top: 1em;">{{ "Update Customer" if is_edit_mode else "Create Customer" }}</button>
+        <a href="{{ url_for('list_customers_page') }}" class="button" style="margin-left: 10px; background-color: #777; margin-top: 1em;">Cancel</a>
+    </form>
+{% endblock %}

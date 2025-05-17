@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+    <a href="{{ url_for('new_burger_form_page') }}" class="button" style="margin-bottom: 1em;">+ New Burger</a>
+
+    {# Display error messages passed via query parameters (simple example) #}
+    {% if request.query_params.error == "delete_failed" %}
+        <p class="error">Failed to delete the burger. Please try again.</p>
+    {% endif %}
+
+    {% if burgers %}
+    <table>
+        <thead>
+            <tr><th>ID</th><th>Name</th><th>Price</th><th>Ingredients</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for burger in burgers %}
+            <tr>
+                <td>{{ burger.id }}</td>
+                <td>{{ burger.name }}</td>
+                <td>${{ "%.2f"|format(burger.price) }}</td>
+                <td>
+                    {# burger.ingredients is Dict[str, int] e.g. {'Bun': 2, 'Beef Patty': 1} #}
+                    {% if burger.ingredients %}
+                        {{ burger.ingredients.items() | map(attribute='0') | join(', ') }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td style="white-space: nowrap;">
+                    <a href="{{ url_for('edit_burger_form_page', burger_id=burger.id) }}" class="button" style="background-color: #f0ad4e; margin-right: 5px;">Edit</a>
+                    <form method="POST" action="{{ url_for('delete_burger_submit', burger_id=burger.id) }}" style="display: inline;"
+                          onsubmit="return confirm('Are you sure you want to delete burger \'{{ burger.name }}\'?');">
+                        <button type="submit" class="button delete">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No burgers found.</p>
+    {% endif %}
+{% endblock %}

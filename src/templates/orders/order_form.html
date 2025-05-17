@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form id="order-form" method="POST"
+          action="{{ url_for('update_order_submit', order_id=order_data.id) if is_edit_mode else url_for('create_order_submit') }}">
+
+        <div class="form-group">
+            <label for="customer_id">Customer:</label>
+            <select id="customer_id" name="customer_id" required>
+                <option value="">Select Customer</option>
+                {% for customer in customers %}
+                    <option value="{{ customer.id }}" {% if order_data.customer_id == customer.id %}selected{% endif %}>
+                        {{ customer.name }} ({{customer.phone}})
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="order-items-section" style="margin-top: 1.5em; padding: 1em; border: 1px solid #ddd; border-radius: 4px;">
+            <h3>Order Items:</h3>
+            <div id="selected-order-items-container" style="margin-bottom: 10px; padding: 5px; border: 1px solid #eee; min-height: 30px;">
+                <span id="no-items-placeholder" class="placeholder" {% if is_edit_mode and order_items_js %}style="display:none;"{% endif %}>No items added yet.</span>
+                {# Items will be added here by JavaScript #}
+            </div>
+
+            <h4>Add Item:</h4>
+            <div class="form-group" style="display: flex; align-items: flex-end; gap: 10px;">
+                <div style="flex-grow: 1;">
+                    <label for="select_burger">Burger:</label>
+                    <select id="select_burger">
+                        <option value="">Select Burger</option>
+                        {% for burger in burgers %}
+                            <option value="{{ burger.id }}" data-price="{{ burger.price }}" data-name="{{ burger.name }}">{{ burger.name }} (${{ "%.2f"|format(burger.price) }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="item_quantity">Quantity:</label>
+                    <input type="number" id="item_quantity" value="1" min="1" style="width: 70px;">
+                </div>
+                <button type="button" id="add-order-item-btn" class="button">Add Item</button>
+            </div>
+        </div>
+
+        {# Hidden fields for actual submission of items #}
+        <div id="hidden-order-item-fields"></div>
+
+        <div class="form-group" style="margin-top: 1em;">
+            <label for="status">Order Status:</label>
+            <select id="status" name="status">
+                {% for s_val in order_statuses %}
+                    <option value="{{ s_val }}" {% if order_data.status == s_val %}selected{% endif %}>{{ s_val }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" style="margin-top: 1em;">{{ "Update Order" if is_edit_mode else "Create Order" }}</button>
+        <a href="{{ url_for('list_orders_page') }}" class="button" style="margin-left: 10px; background-color: #777; margin-top: 1em;">Cancel</a>
+    </form>
+{% endblock %}
+
+{% block page_scripts %}
+    <script>
+        // Pass initial items for edit mode to the JS
+        const initialOrderItems = {{ order_items_js | tojson | safe if is_edit_mode and order_items_js else [] }};
+        // Pass available burgers for JS (name, price mapping)
+        const availableBurgers = [
+            {% for burger in burgers %}
+                { id: "{{ burger.id }}", name: "{{ burger.name }}", price: {{ burger.price }} },
+            {% endfor %}
+        ];
+    </script>
+    <script src="{{ url_for('static', path='/order_form.js') }}"></script> {# New JS file for order form logic #}
+{% endblock %}

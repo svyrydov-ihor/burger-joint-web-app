@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form id="burger-form" method="POST"
+          action="{{ url_for('update_burger_submit', burger_id=burger_data.id) if is_edit_mode else url_for('create_burger') }}">
+
+        <div class="form-group">
+            <label for="name">Burger Name:</label>
+            <input type="text" id="name" name="name" value="{{ burger_data.name or '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="3">{{ burger_data.description or '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="price">Price:</label>
+            {# Ensure price is formatted correctly if it's a float #}
+            <input type="number" id="price" name="price" step="0.01" value="{{ '%.2f'|format(burger_data.price) if burger_data.price is defined and burger_data.price is not none else '' }}" required>
+        </div>
+
+        <div id="burger-ingredients-section">
+            <h3>Ingredients:</h3>
+            <div id="selected-ingredients-container">
+                {# Placeholder will be managed by JavaScript #}
+                <span id="no-ingredients-placeholder" class="placeholder" {% if is_edit_mode and initial_selected_ingredients_js %}style="display:none;"{% endif %}>No ingredients added yet.</span>
+            </div>
+
+            <h4>Add Ingredients:</h4>
+            <div id="available-ingredients-list">
+                {% for ingredient in all_ingredients %}
+                <button type="button"
+                        class="add-ingredient-btn"
+                        data-ingredient-id="{{ ingredient.id }}"
+                        data-ingredient-name="{{ ingredient.name }}">
+                    {{ ingredient.name }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# Hidden fields for ingredient IDs will be populated by JavaScript #}
+        <div id="hidden-ingredient-fields"></div>
+
+        <button type="submit" style="margin-top: 1em;">{{ "Update Burger" if is_edit_mode else "Create Burger" }}</button>
+        <a href="{{ url_for('list_burgers_page') }}" class="button" style="margin-left: 10px; background-color: #777; margin-top: 1em;">Cancel</a>
+    </form>
+{% endblock %}
+
+{% block page_scripts %}
+    <script>
+        // Pass initial ingredients for edit mode to the JS
+        // Ensure this variable is defined even if empty for new mode to avoid JS errors.
+        const initialSelectedIngredients = {{ initial_selected_ingredients_js | tojson | safe if is_edit_mode and initial_selected_ingredients_js else [] }};
+    </script>
+    {# Make sure you are using the corrected path if you moved burger_constructor.js #}
+    <script src="{{ url_for('static', path='/burger_constructor.js') }}"></script>
+{% endblock %}
